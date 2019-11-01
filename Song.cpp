@@ -19,7 +19,7 @@ using namespace std;
 
   ostream& operator << (ostream& out, const Song &s)
   {
-    out << s.getTitle() << " by " << s.getArtist() << " - " << s.getSize();
+    out << s.getTitle() << " by " << s.getArtist() << " - " << s.getSize() << "MB";
     return out;
   }
 
@@ -66,5 +66,5 @@ using namespace std;
 
   Song::~Song()
   {
-    cout << "debug - in destructor for song" << endl;
+   
   }

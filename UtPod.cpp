@@ -31,7 +31,6 @@ using namespace std;
   int UtPod::addSong(Song const &song)                                    //inserts new valid songs to the head of linked list
   {
     if(song.getSize() > getRemainingMemory()){
-      cout << "Song too big" << endl;
       return NO_MEMORY;
     }else{
       SongNode *temp = new SongNode;
@@ -54,6 +53,8 @@ using namespace std;
       prev = pointer;
       pointer = pointer->next;
     }
+     
+    if(pointer == NULL){return NOT_FOUND;}
 
     if(prev == NULL){                                                    //if matching song is first element of the linked list
       songs = pointer->next;
@@ -68,49 +69,40 @@ using namespace std;
   
   void UtPod::shuffle()
   {
-    if((songs == NULL)&&(songs->next == NULL)){
+    if((songs == NULL)||(songs->next == NULL)){
       return;
     }
 
-    struct nodeArray                                                     //creates indicators or "ranks" for random sorting
-    {
-      Song _song;
-      int rank;
-    };
-    
-    nodeArray array[MAX_MEMORY];                                        //assuming Songs have at least 1MB of data, this is maximum array size
-    
-    SongNode *p = songs;
-    int index = 0;
-    
-    while(p != NULL){
-      array[index]._song = p->s;                                        //inserts all of the songs in current linked list into array
-      array[index].rank = rand() % 512;                                 //random rank is attached to each song
-      index ++;
-      p = p->next;
+    int songCount = 0;
+    SongNode *p1 = songs;
+
+    while(p1 != NULL){
+      songCount ++;
+      p1 = p1->next;
     }
     
-    clearMemory();                                                      //starting new linked list
-    songs == NULL;
-    
-    for(int i = 0; i < index; i++){                                     //sorts array based on attached rank
-      int best = i;
+    for(int i = 0; i < (songCount * 3); i++){                            //to simulate closest to randomization, process happens three times
+      SongNode *p2 = songs;
+      SongNode *p3 = songs;
+      int rCount1, rCount2;
+     
+      rCount1 = (rand() % songCount) ;                                   //randomizes to which nth element to swap with another
+      rCount2 = (rand() % songCount) ;
 
-      for(int j = i + 1; j < index; j++){
-         if(array[j].rank < array[best].rank){
-           best = j;
-         }
+      for(int j = 0; j < rCount1; j++){
+        p2 = p2->next;
       }
 
-      nodeArray temp = array[i];
-      array[i] = array[best];
-      array[best] = temp;
+      for(int j = 0; j < rCount2; j++){
+        p3 = p3->next;
+      }
+      
+      Song temp = p2->s;
+      p2->s = p3->s;
+      p3->s = temp;
     }
 
-    for(int i = 0; i < index; i++){                                    //inserts songs into new linked list based in rank order
-      addSong(array[i]._song);
-    }
-
+    return;
   }
  
   void UtPod::showSongList()
@@ -151,9 +143,10 @@ using namespace std;
       p1->next = temp;
       songs = p2;                                                                                        //head pointer is now pointed at newly swapped node
     }
+
     prev = songs;
-    for(p1 = songs->next; p1 != NULL; p1 = p1->next){                                                    //performs the same swap and sort function on each increment from the head pointer to NULL
-      best = p1->s;
+    for(p1 = songs->next; p1 != NULL; p1 = p1->next){                                                    //performs the same swap and sort function on each
+      best = p1->s;                                                                                      //increment of the linked list
 
       for(SongNode *p3 = p1->next; p3 != NULL; p3 = p3->next){
         if(p3->s < best){
